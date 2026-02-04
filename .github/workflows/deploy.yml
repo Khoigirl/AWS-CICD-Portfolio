@@ -1,32 +1,17 @@
-name: Deploy Portfolio to S3
+name: Debug Secrets
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  deploy:
+  debug:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          
-      - name: Upload files to S3
+      - name: Check available secrets
         run: |
-          aws s3 sync website/ s3://${{ secrets.AWS_S3_BUCKET }}/ --delete --acl public-read
-          
-      - name: Display S3 sync results
-        run: |
-          echo "✅ Files successfully synced to S3!"
-          echo "🌐 Your website should be available at: https://${{ secrets.AWS_S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com"
-
-
-      
+          echo "Checking which secrets are available..."
+          echo "AWS_S3_BUCKET is set: ${{ secrets.AWS_S3_BUCKET != '' }}"
+          echo "AWS_ACCESS_KEY_ID is set: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}"
+          echo "AWS_SECRET_ACCESS_KEY is set: ${{ secrets.AWS_SECRET_ACCESS_KEY != '' }}"
+          echo "AWS_REGION is set: ${{ secrets.AWS_REGION != '' }}"
+          echo "AWS_DEFAULT_REGION is set: ${{ secrets.AWS_DEFAULT_REGION != '' }}"
