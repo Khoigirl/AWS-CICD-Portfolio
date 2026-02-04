@@ -27,31 +27,6 @@ jobs:
         run: |
           echo "✅ Files successfully synced to S3!"
           echo "🌐 Your website should be available at: https://${{ secrets.AWS_S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com"
-```
 
-## 🔍 **Why This Works Better**
 
-1. **Uses official AWS action** (`aws-actions/configure-aws-credentials@v4`)
-2. **Direct AWS CLI commands** instead of third-party Docker containers
-3. **Better error reporting** - you'll see actual AWS CLI error messages
-4. **More reliable** - maintained by AWS themselves
-
-## 📁 **Repository Structure Check**
-
-Make sure your repository looks like this:
-```
-AWS-CICD-Portfolio/
-├── .github/
-│   └── workflows/
-│       └── deploy.yml  ← Your workflow file
-├── website/            ← Your files must be in this folder
-│   ├── index.html
-│   ├── about.html
-│   ├── portfolio.html
-│   ├── assets/
-│   │   ├── css/
-│   │   ├── javascript/
-│   │   └── images/
-│   └── [other files]
-└── README.md
       
