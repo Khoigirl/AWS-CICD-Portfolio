@@ -1,5 +1,4 @@
-name: Upload Portfolio
-
+name: Deploy Portfolio to S3
 on:
   push:
     branches:
@@ -8,19 +7,51 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Sync Files to S3
-        uses: jakejarvis/s3-sync-action@master
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          args: --acl public-read --follow-symlinks --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: 'website'  # Change if your files are in a different directory
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          
+      - name: Upload files to S3
+        run: |
+          aws s3 sync website/ s3://${{ secrets.AWS_S3_BUCKET }}/ --delete --acl public-read
+          
+      - name: Display S3 sync results
+        run: |
+          echo "✅ Files successfully synced to S3!"
+          echo "🌐 Your website should be available at: https://${{ secrets.AWS_S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com"
+```
 
+## 🔍 **Why This Works Better**
+
+1. **Uses official AWS action** (`aws-actions/configure-aws-credentials@v4`)
+2. **Direct AWS CLI commands** instead of third-party Docker containers
+3. **Better error reporting** - you'll see actual AWS CLI error messages
+4. **More reliable** - maintained by AWS themselves
+
+## 📁 **Repository Structure Check**
+
+Make sure your repository looks like this:
+```
+AWS-CICD-Portfolio/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml  ← Your workflow file
+├── website/            ← Your files must be in this folder
+│   ├── index.html
+│   ├── about.html
+│   ├── portfolio.html
+│   ├── assets/
+│   │   ├── css/
+│   │   ├── javascript/
+│   │   └── images/
+│   └── [other files]
+└── README.md
       
